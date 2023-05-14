@@ -117,3 +117,89 @@ drwxrwxrwt . 39 root root 4096 Feb 8 20:52 /tmp
 - `umask` by default = `002` and if we cleared it from removed file then it will get permission 664 and if we removed it from created directory it will get permissions 775.
 
 - The system default umask values for Bash shell users are defined in the `/etc/profile` and `/etc/bashrc` files. Users can override the system defaults in their `.bash_profile` and `.bashrc` files.
+
+***
+
+## chapter 7
+
+### Processes
+
+- `fork` : An existing (parent) process duplicates its own add ress space (fork) to create a new (child) process structure.
+
+- All processes are descendants of the first system process, which is `systemd` on a Red Hat Enterprise Linux 7 system.
+
+- A child process may then `exec` its own program code.
+
+- Normally, a parent process sleeps while the child process runs, setting a request `wait` to be signaled when the child completes.
+
+- `zombie` : The remainder of the child process Upon exit after the child process has already closed or discarded its resources and environment.
+
+- There are many process states : **Running**, **Sleeping**, **Stopped** and **Zombie**.
+  - Running :-
+    - flag (R\) -> `TASK_RUNNING`: The process is either executing on a CPU or waiting to run. Running Process can be executing user routines or kernel routines (system calls), or be queued and ready when in the Running (or Runnable) state.
+  
+  - Sleeping :-
+    - flag (S) -> `TASK_INTERRUPTIBLE`: The process is waiting for some condition: a hardware request, system resource access or signal . When an event or signal satisfies the condition, the process returns to Running.
+    - flag (D) -> `TASK_UNINTERRUPTIBLE`: This process is also Sleeping, but unlike s state, will not respond to delivered signals. Used only under specific conditions in which process i nterruption may cause an unpredictable device state.
+    - flag (K) -> `TASK_KILLABLE`: Identical to the uninterruptible D state, but modified to allow the waiting task to respond to a signal to be killed (exited completely).Utilities frequently display Killable processes as D state.
+
+  - Stopped :-
+    - flag (T) -> `TASK_STOPPED`: The process has been Stopped (suspended), usually by being signaled by a user or a not her process. The process can be continued (resumed) by a not her signal to return to Running.
+    - flag (T) -> `TASK_TRACED`: A process that is being debugged is a l so temporarily Stopped and shares the same T state flag.
+
+  - Zombie :-
+    - flag (Z) -> `EXIT_ZOMBIE`: A child process signals its parent as it exits. All resources except for the process identity (PiD) are released.
+    - flag (X) -> `EXIT_DEAD`: When the parent cleans up (reaps) the remaining child process structure, the process is now released completely. This state will never be observed in process-listing utilities. 
+
+- The `ps` command is used for l i sti ng current processes.
+  - By default, ps with no options selects all processes with the same effective user ID (EUID) as the current user and associated with the same terminal.
+  - `ps -aux` : A common display listing displays all processes, with columns in which users will be interested, and includes processes without a controlling terminal.
+  - `ps -lux` : A long listing provides more technical detail, but may display faster by avoiding the username lookup.
+  - `ps -ef` : to display all processes.
+  - `-O` or `--sort` : sorting the rows as the default output is unsorted.
+
+- `top` : for a repetitive update process display.
+
+### Jobs and sessions
+
+- `A foreground process` is a command running in a terminal window.
+- `A background process` is started without a controlling terminal because it has no need for terminal interaction.
+  - to run process in the back ground we appent **An ampersand (&)** to the command.
+    - An ampersand will background only the last command in a pipeline, unless the command set is surrounded with parentheses.
+
+  ```
+  [student@serverx -]$ sleep 10000 & 
+  [1] 5947 
+  [student@serverx -]$ 
+  ```
+
+- `jobs` : tracks jobs, per session, in a table.
+- `fg %job number` : bringing background job with that id to be foreground process.
+- `Ctrl + z` : Suspends the job. The job is placed in the background. Pending output and keyboard typeahead are discarded.
+- `Ctrl + c` : terminates the process.
+- `ps j` : displays job information, including the initial command shell of each session.
+- `bg %job number` : To restart the process in the background.
+
+### Process control using signals
+
+- A signal is a software interrupt delivered to a process. Signals report events to an executing program. Events that generate a signal can be an error, external event (e.g., i/o request or expired timer), or by explicit request (e.g., use of a signal-sending command or by keyboard sequence).
+
+- most important signals
+  - `INT` Signal Number is 2 : Causes program termination. Can be blocked or handled. Sent by typing **INTR** character **(Ctrl + c)**.
+  - `KILL` Signal Number is 9 : Causes abrupt program termination. Cannot be blocked, ignored, or handled; always fatal.
+  - `TERM` Signal Number is 15 **(default)** : Causes program termination. Unlike **SIGKILL**, can be blocked, ignored, or handled. The polite way to ask a program to terminate; allows self-cleanup.
+
+- It is recommended to send SIGTERM first, then retry with SIGKILL only if a process fails to respond. 
+
+  - `kill` command : sends a signal to a process by ID.
+    - `kill PID`
+    - `kill -signal PID`
+    - `kill -l`
+  
+  - `killall` command : sends a signal to one or more processes matching selection criteria, such as a command name, processes owned by a specific user, or all system-wide processes.
+  - `pkill` command : like **killall** command it uses advanced selection criteria, which can include combinations of: command, UID, GID, Parent and Terminal.
+
+- `w` command : views users currently logged into the system and their cumulative activities. Use the TTY and FROM columns to determine the user's location.
+  - `w -f` **(-f) option** : for making remote users display their connecting system name in the FROM column.
+
+- `pstree` command : view a process tree for the system or a single user.
