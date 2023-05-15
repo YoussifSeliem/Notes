@@ -203,3 +203,31 @@ drwxrwxrwt . 39 root root 4096 Feb 8 20:52 /tmp
   - `w -f` **(-f) option** : for making remote users display their connecting system name in the FROM column.
 
 - `pstree` command : view a process tree for the system or a single user.
+
+***
+
+## Notes and Question
+
+> in this section i will write the tricky questions and notes i face.
+
+**Q1** : Update some settings to make any user created at the future has **sudo** privilages
+
+**Answer :-**
+when you write the command
+```bash
+[root@localhost ~]# adduser -D
+```
+you will get the default settings for the new user
+you can change the default group for the new users to be `wheel` group because wheel group has sudo privilage
+this is done by this command
+```bash
+[root@localhost ~]# adduser -D -g wheel
+```
+after this the default primary group for the new users should be 10 but this isn't enough
+we need after that to open the file `/etc/login.defs`and go to the line containing `USERGROUPS_ENAB yes` and make it `no` instead of yes.
+
+**USERGROUPS_ENAB** makes the primary group of the user to be removed by removing the user and this can't happen with important group like **wheel** so making this field's value **yes** leads to creating new group each time you create a user so it can be removed by removing the user and then the default setting we put willn't be effective in that case.
+
+But when we turn the value to **no** removing the user will not remove its primary group so there's no need to create new group each time you create a user.
+
+At the end the default settings will be effective and the user will get **wheel** group as primary group.
