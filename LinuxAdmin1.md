@@ -206,9 +206,94 @@ drwxrwxrwt . 39 root root 4096 Feb 8 20:52 /tmp
 
 ***
 
-## Notes and Question
+## chapter 8
 
-> in this section i will write the tricky questions and notes i face.
+### Introduction to systemd
+
+- In Red Hat Enterprise Linux 7, process ID 1 is **systemd**
+
+- systemd has more advantages over init
+  - systemd is better than init as it can detect any issue in all config files but init is limited
+  - init gives all the resources to the next process but systemd distribute resources in parallel so it's faster
+
+- `systemctl` command : used to manage different types of systemd objects, called **units**.
+- `systemctl - t help` command : displays a list of available unit types.
+- `systemctl status name . type` command : shows status and if the unit type is not provided, systemctl will show the status of a service unit, if one exists.
+  - `systemctl status sshd . service` command : shows status of sshd service
+  - **important keywords in status** :-
+    - *loaded* : Unit config u ration file has been processed.
+    - *active (running)* : Running with one or more continuing processes.
+    - *active (exiting)* : Successfully completed a one-time configuration.
+    - *active (waiting)* : Running but waiting for an event.
+    - *inactive* : Not running.
+    - *enabled* : Will be started at boot time.
+    - *disabled* : Will not be started at boot time.
+    - *static* : Can not be enabled, but may be started by an enabled unit automatically.
+- **systemctl** command will automatically paginate the output with less.(like `systemctl | less`)
+- `systemctl --type=service` command : Query the state of only the service units.
+- `systemctl status rngd.service -l` command : Investigate any units which are in a failed or maintenance state. Optionally add the -l option to show the full output. 
+- We have some alternatives to know if the service is active and enabled or not
+  - `systemctl is - active sshd` command : shows if the service is active or not
+  - `systemctl is - enabled sshd` command : shows if the service is active or not
+- `systemctl list-units --type=service` command : List the active state of all loaded units.
+  - `systemctl list-units --type=service --all` command : The --all option will add inactive units.
+- `systemctl list - unit - files - - type=service` command : View the enabled and disabled settings for all units. Optionally limit the type of unit.
+- `systemctl --failed --type=service` command : View only failed services.
+
+- `ps -p PID` command : to confirm that the listed daemons are running.
+- `ps -up PID` command : to verify that the process is running.
+
+- `systemctl stop sshd.service` command : Stop the service.
+- `systemctl start sshd.service` command : Start the service.
+  - when you stop a service then start it again (restarting the service) the PID will be changed.
+- `systemctl restart sshd.service` command : Stop, then start, the service in a single command.
+- `systemctl reload sshd.service` command : Issue instructions for a service to read and reload its configuration file without a complete stop and start. The process ID will not change.
+
+#### Unit dependencies
+
+- Services may be started as dependencies of other services
+  - If a socket unit is enabled and the service unit with the same name is not, the service will automatically be started when a request is made on the network socket.
+  - Services may also be triggered by path units when a file system condition is met.
+
+```
+[root@serverX -]# systemctl stop cups.service 
+Warning : Stopping cups, but it can still be activated by: 
+cups.path
+cups.socket
+```
+- To completely stop printing services on a system, stop all three units. Disabling the service will disable the dependencies.
+
+- `systemctl list-dependencies UNIT` command : can be used to print out a tree of what other units must be started if the specified unit is started.
+- `systemctl list-dependencies UNIT --reverse` command : will show what units need to have the specified unit started in order to run.
+
+#### masking services
+
+- there are multiple methods to manage networks (network and NetworkManager) and firewalls (iptables and firewalld). To prevent an administrator from accidentally starting a service, that service maybe masked.
+- Masking will create a link in the configuration directories so that if the service is started, nothing will happen.
+  - the link is to `/dev/null`.
+
+- `systemctl mask network` command : for masking the service.
+- `systemctl unmask network` command : for removing the mask from the service.
+
+- A **disabled** service will not be started a utomatically at boot or by other unit files, but can be started manually. A **masked** service can not be started manually or automatically.
+
+- starting service doesn't guarantee it will start after boot, the service starts after the boot only if it's enabled.
+
+- Services are started at boot time when links are created in the appropriate systemd configuration directories.
+
+***
+## Notes
+
+> in this section i will add random notes that may be useful
+
+- `echo $?` : prints code indicating the status of the last command
+  - prints 0 if it ran successfully
+
+***
+
+## Question
+
+> in this section i will write the tricky questions i face.
 
 **Q1** : Update some settings to make any user created at the future has **sudo** privilages
 
