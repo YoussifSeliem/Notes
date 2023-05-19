@@ -1,5 +1,44 @@
 # Linux Admin 1
 
+## Chapter 4
+
+### Redirecting Output to a File or Program
+
+- Processes are created with default connections for channels **0**, **1**, and **2**, known as `standard input`, `standard output`, and `standard error`.
+- Processes use channels **3** and above to connect to other files.
+
+|Number |Channel name|Default connection|Usage            |
+|-------|------------|------------------|-----------------|
+|0      |stdin       |Keyboard          |read only        |
+|1      |stdout      |Terminal          |write only       |
+|2      |stderr      |Terminal          |write only       |
+|3+     |filename    |none              |read and/or write|
+
+- Channel redirection replaces default channel destinations with file names representing either output files or devices.
+- The special file `/dev/null` quietly discards channel output redirected to it.
+
+- `> file` : redirect stdout to a file.
+- `>> file` : redirect stdout to a file, append to the current file content.
+- `2 > file` : redirect stderr to a file.
+  - if the file is `/dev/null` then this means discarding stderr messages.
+- `&>file` : combine stdout and stderr to a one file.
+- `» file 2>&1 ` : combine stdout and stderr to a one file,append to current file content.
+
+### constructing pipline
+
+- Redirection controls channel output to or from files while piping sends channel output to another process.
+
+- **example**
+```bash
+[student@desktopX ~]$ ls | wc -l > /tmp/how-many-files
+```
+- This command list the files and directories then this output goes as input to `wc -l` command thus counting the number of lines and sent the output to the specified file.
+
+- `tee` command : copy standart input to a file and also to standard output.
+
+
+***
+
 ## Chapter 6
 
 ### Linux file system permissions
