@@ -36,6 +36,27 @@
 
 - `tee` command : copy standart input to a file and also to standard output.
 
+### Editing Text Files from the Shell Prompt
+
+#### Vim editor
+
+- There are different modes : **command**, **insertion**, **visual edit**, **extended command mode (execution mode)**
+  - An `i` keystroke enters `insert mode`, where all text typed becomes file content. Pressing **Esc** returns to command mode.
+  - A `v` keystroke enters `visual mode`, where multiple characters may be selected for text manipulation. The same keystroke used to enter visual mode (v, V or Ctrl-v) is used to exit.
+  - The `:` keystroke begins `extended command mode` for tasks like writing the file to save it. and quitting the Vim editor.
+
+- more options in command mode usually
+  - `u` : to undo mistaken edits on the current line.
+  - `x` : to delete a selection of text.
+  - `:w` : to write (save) the file and remain in command mode for more editing.
+  - `:wq` : to write the file and quit Vim.
+  - `:q!` : to quit Vim, but discard all file changes since the last write.
+  - `yy` : to copy the line
+  - `dd` : cut the line
+  - `p` : to paste the copied
+
+- notice that copy and paste know as **yank** and **put** corresponding to *y* and *p*
+- you can copy some selected text by doing to **visual mode** then moving cursor to select then click *y*. the text is selected and can be pasted using *p*.
 
 ***
 
@@ -327,6 +348,8 @@ cups.socket
 
 - `echo $?` : prints code indicating the status of the last command
   - prints 0 if it ran successfully
+
+- `date +%A" , "%B" "%d", "%Y` : to display today's date with day of the week, month, date, and year.
 
 ***
 
