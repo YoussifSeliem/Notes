@@ -38,6 +38,7 @@
 - number of instances in the resource are represented as dots.
 
 - **Example**:-
+
 ![Resource alloc graph example](./imagesForOS/img1.JPG "Resource alloc graph example")
 
 - The sets T(Threads), R(Resources), and E(Edges)
