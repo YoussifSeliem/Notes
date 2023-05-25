@@ -51,8 +51,35 @@
 - If each resource type has exactly *one instance*, then a cycle implies that *a deadlock has occurred*. (In this case, a cycle in the graph is both a necessary and a sufficient condition for the existence of deadlock.)
 - If each resource type has *several instances*, then a cycle *does not necessarily imply that a deadlock has occurred*. (In this case, a cycle in the graph is a necessary but not a sufficient condition for the existence of deadlock.)
 
+- ==Methods for Handling Deadlocks==
+  - We can use a protocol to prevent or avoid deadlocks, ensuring that the system will never enter a deadlocked state.
+    - **Deadlock prevention** : provides a set of methods to ensure that at least one of the necessary conditions cannot hold.
+    - **Deadlock avoidance** : requires that the operating system be given additional information in advance concerning which resources a thread will request and use during its lifetime. With this additional knowledge, the operating system can decide for each request whether or not the thread should wait.
+  - We can allow the system to enter a deadlocked state, detect it, and recover.
+  - We can ignore the problem altogether and pretend that deadlocks never occur in the system.
 
-### pagging
+### deadlock prevention
+
+- By ensuring that at least one of these conditions cannot hold, we can *prevent* the occurrence of a deadlock.
+- we will examine each condition seperately
+  - **Mutual exclusion :-**
+    - Sharable resources like (Read-Only files) do not require mutually exclusive access and thus cannot be involved in a deadlock
+    - we cannot prevent deadlocks by denying the mutual-exclusion condition, because some resources are intrinsically nonsharable (like Mutex locks).
+  - **Hold and Wait :-**
+    - One protocol that we can use requires each thread to request and be allocated all its resources before it begins execution. (impracticle due to dynamic nature of requesting resources).
+    - An alternative protocol allows a thread to request resources only when it has none.
+    - Both these protocols have two main disadvantages
+      - **First**, resource utilization may be low, since resources may be allocated but unused for a long period.
+      - **Second**, starvation is possible. A thread that needs several popular resources may have to wait indefinitely, because at least one of the resources that it needs is always allocated to some other thread.
+  - **No Preemption :-**
+    - one protocol is If a thread is holding some resources and requests another resource that cannot be immediately allocated to it, then all resources the thread is currently holding are preempted.
+      - The preempted resources are added to the list of resources for which the thread is waiting.
+    - Alternatively, if a thread requests some resources, we first check whether they are available. If they are, we allocate them. If they are not, we check whether they are allocated to some other thread that is waiting for additional resources. If so, we preempt the desired resources from the waiting thread and allocate them to the requesting thread. If the resources are neither available nor held by a waiting thread, the requesting thread must wait.
+  - **Circular Wait:-**
+    - presents an opportunity for a practical solution by invalidating one of the necessary conditions.
+      -  One way to ensure that this condition never holds is to impose a total ordering of all resource types and to require that each thread requests resources in an increasing order of enumeration.
+
+***
 
 ## Chapter 8 (Main Memory)
 
